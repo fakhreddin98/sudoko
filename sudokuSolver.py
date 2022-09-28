@@ -98,10 +98,14 @@ startRowBox = row//3
                 return False
     return True
 
-def printBoard(board):
+def printBoard(board):    """
+Vi skriver ut sudokun här och skickar den till terminalen, vi skriver ut den lösta koden 
+om findEmpty är klar då är vi klara med sudokun, annars skriver vi sudokun utan lösning och
+detta används när vi anropade på funktionerna för att skriva ut sudoku innan lösning efter det
+nropar vi funktionen som löser sudokun därefter anropar vi samma funktion igen som skriver ut den 
+lösta koden eftersom sudokun är löst.
     """
-Vi skriver ut sudokun här och skickar den till solved.csv
-    """
+
     if not findEmpty(board):
         print("Finished puzzle")
     else:
