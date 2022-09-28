@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import sys
 original_stdout = sys.stdout
 
 def loadPuzzle():
     """
-    A method to read a file having puzzle in it. The puzzle should have nine lines
-     of nine numbers each between 0-9 seprated by commas.
-     
-    Arguments:
-    None
-    
-    Output:
-    A list variable board
+Koden börjar med en funktion som laddar puzzlet från csv fil till py koden som ska lösa puzzlet.
+Och detta gjordes genom att använda funktionen sys.argv som gör det möjligt för oss att skriva in filnamnet utanför
+koden som gör det lättare för att puzzel fil som ska lösas.
+fileHandle = open(filnamn[1], "r") Eftersom vi använde funktionen sys.arg och när vi skriver fil namnet
+i terminalen då kommer vi få tillbaks en lista med båda sudokuSolver.py och sudoku.csv samtidigt och vi
+behöver pega på en av de som är [1] i det fallet så att filen läser in den.
+puzzle = fileHandle.readlines() #Gör att man kan läsa alla rader från filen.
+for line in range(len(puzzle)): #är en for loop som är lika lång som puzzlet
+if loopen är för att den ska inte fortsätta läsa efter sista raden och den gör att den splitar där vi har “,”.
     """
     filnamn = sys.argv
     board = []
@@ -26,34 +26,58 @@ def loadPuzzle():
             board.append(list(map(int,puzzle[line].split(","))))
     fileHandle.close()
     return board
+
+
 def findEmpty(board):
     """
-    A method to find the next empty cell of the puzzle.
-    Iterates from left to right and top to bottom
-    
-    Arguments:
-    board - a list of nine sub lists with 9 numbers in each sub list
-    
-    Output:
-    A tuple (i, j) which is index of row, column
+Här ska vi hitta dem tomma kollumer och rader och de är märkta med 0 i sudoku filen och varje 0 som
+hittas ska märkas med sin placering med (i, j) i är för rad och j är för kolumnen.
+koden körs många gånger tills den har lika många gånger som antal siffror i listan och sen avslutar den.
     """
     for i in range(len(board)):
         for j in range(len(board[0])):
             if board[i][j] == 0:
                 return (i, j) #row, column
     return None
+
+
 def valid(board, num, pos):
     """
-    A method to find if a number num is valid or not
-    
-    Arguments:
-    board - a list of nine sub lists with 9 numbers in each sub list
-    num - a number between 1 to 9 both inclusive
-    pos - a tuple (i, j) representing row, column
-    
-    Output:
-    True if the number is valid in position pos of puzzle else False.
-    """
+Här ska vi hitta platsen som behöver att lägga till en siffra till och vi kollar att den inte har
+något liknande nummer i rad, kolumn och 3x3 boxen.
+
+Detta gör att man kollar rad och om den har samma nummer vi kollar längden på raden och ifall 
+den har samma nummer eller det är en plats som vi har lagt nummer till så retunerar vi false.
+
+ for i in range(len(board[0])):
+        if board[row][i] == num and column != i:
+            return False
+
+Detta gör i princip samma sak att man kollar kommunen och om den har samma nummer. 
+Vi kollar längden på kommunen och ifall den har samma nummer eller det är en plats som vi har lagt nummer till så returnerar vi false.
+
+   for i in range(len(board)):
+        if board[i][column] == num and row != i:
+            return False
+Detta gör i princip samma sak att man kollar boxen och om den har samma nummer. 
+Vi kollar på box ifall den har samma nummer eller det är en plats som vi har lagt nummer till så returnerar vi false.
+Men detta görs på lite annorlunda sätt och detta är genom att kolla vilken box vi är på och detta görs genom att dela 3 på raden och ta resultatet och behandla det som en plats för en box i sudokun, detta görs med rader och kolum och då för vi ett nummer som är till exempel (0,2) då är det boxen som ligger högst upp i mitten. efter vi har fått platsen till boxen då gör vi den.  
+  for i in range(startRowBox*3, (startRowBox*3)+3):
+        for j in range(startColumnBox*3, (startColumnBox*3)+3):
+Den gör att vi har platsen förr nummrerna som ligger i boxen.
+
+            if board[i][j] == num and row != i and column != j:
+Det gör att om boxen har samma nummer då ska den retunera false.
+
+startRowBox = row//3 
+    startColumnBox= column//3
+    for i in range(startRowBox*3, (startRowBox*3)+3):
+        for j in range(startColumnBox*3, (startColumnBox*3)+3):
+            if board[i][j] == num and row != i and column != j:
+                return False
+    return True
+
+   """
     row = pos[0]
     column = pos[1]
     #checking rows
@@ -76,13 +100,7 @@ def valid(board, num, pos):
 
 def printBoard(board):
     """
-    A method to print the sudoku puzzle in a visually appealing format
-
-    Arguments:
-    board - a list of nine sub lists with 9 numbers in each sub list
-
-    Output:
-    Prints a nine x nine puzzle represented as a sudoku puzzle. Returns None.
+Vi skriver ut sudokun här och skickar den till solved.csv
     """
     if not findEmpty(board):
         print("Finished puzzle")
@@ -103,13 +121,7 @@ def printBoard(board):
 
 def printsolved(board):
     """
-    A method to print the sudoku puzzle in a visually appealing format
-
-    Arguments:
-    board - a list of nine sub lists with 9 numbers in each sub list
-
-    Output:
-    Prints a nine x nine puzzle represented as a sudoku puzzle. Returns None.
+Vi skriver ut texten och lägger det till solved.csv
     """
 
     with open('solved.csv', 'w') as f:
@@ -133,22 +145,34 @@ def printsolved(board):
 
 def solve(board):
     """
-    A method to solve the sudoku puzzle using the other functions defined.
-    We use a simple recursion and backtracking method.
+Här löser vi sudokun.
+om vi inte hittar find eller find returnerar none i förra funktionen då returnerar vi True som betyder att vi är klara
 
-    Arguments:
-    board - a list of nine sub lists with 9 numbers in each sub list
+annars har find en plats till en siffra som behöver ersättas med en siffra.
+Vi hittar den lediga platsen som vi har hittat i förra funktionen.
 
-    Output:
-    Returns True once the puzzle is successfully solved else False
+  for i in range(1,10):
+        if valid(board, i, find):
+            board[row][col] = i
+Detta gör att vi ska lägga till en siffra mellan 1 - 9
+och om vi hittar en plats i sudokun som har 0 då ska vi skriva in i som provar sig fram till rätt siffra.
+nu om vi har hitta en siffra som passar in och när vi har gått vidare till nästa plats som har en nolla och
+vi inte hittar något siffra som passar in då behöver vi gå bak och hitta ett annat siffra som passar in i
+boxen och om vi inte hittar något då backar vi och provar ett annat lösning och detta  görs genom:
+ if solve(board):
+                return True
+
+            board[row][col] = 0
+    return False
+Detta gör om vi hittar en lösning till platsen returnerar vi True annars går vi tillbaks till förra siffra och gör det till 0 som gör att denna plats behöver hitta en ny lösning som är inte samma som förra lösning eller som siffror som finns i rad, kolumn eller box. 
     """
     find = findEmpty(board)
-    
+
     if not find:
         return True
     else:
         row, col = find
-    
+
     for i in range(1,10):
         if valid(board, i, find):
             board[row][col] = i
@@ -159,8 +183,8 @@ def solve(board):
             board[row][col] = 0
     return False
 
-board = loadPuzzle()   #loading the board from puzzle file     
-#printBoard(board)      #printing the board before solving the puzzle
-solve(board)           #solving the puzzle
-#printBoard(board)      #printing the puzzle after solving
-printsolved(board)
+board = loadPuzzle()   #Hämtar data från puzzwel filen till board
+printBoard(board)      #Skriver ut sudokun innan lösning
+solve(board)           #löser sudokun
+printBoard(board)      #Skriver ut sudoku efter lösning
+printsolved(board)     #Skickar den klara sudokun till Solved.csv filen
